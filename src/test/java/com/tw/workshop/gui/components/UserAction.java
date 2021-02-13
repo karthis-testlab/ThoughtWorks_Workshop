@@ -11,5 +11,13 @@ public interface UserAction {
 	public LoginService shouldBeInTheLoginPage();
 	
 	public ProfileService shouldBeInTheProfilePage();
+	
+	public HotelService shouldBeInTheHotelPage();
+	
+	public ViewCartService shouldBeInViewCartPage();
+	
+	public CartService shouldBeInCartPage();
+	
+	public OrderHistoryService shouldBeInOrderHistoryPage();
 
 }

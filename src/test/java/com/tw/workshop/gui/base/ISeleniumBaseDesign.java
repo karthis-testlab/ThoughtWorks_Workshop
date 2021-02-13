@@ -111,5 +111,7 @@ public interface ISeleniumBaseDesign {
 	 */
 	public void switchToWindow(int index);
 	
+	public void acceptAlert();
+	
 
 }

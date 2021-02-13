@@ -12,5 +12,11 @@ public class ProfileService extends SeleniumBase {
 		System.out.println("[PASSED]: Proflie name is correct name of the profiler is "+firstName);
 		return this;
 	}
+	
+	public HotelService clickOnTheHotelName(String hotelName) {
+		waitFor();
+		click(getWebElement("xpath=//h5[@class='card-title' and contains(text(), '"+hotelName+"')]"));
+		return new HotelService();
+	}
 
 }

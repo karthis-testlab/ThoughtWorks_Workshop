@@ -20,6 +20,22 @@ public class UserActions implements UserAction {
 	
 	public ProfileService shouldBeInTheProfilePage() {		
 		return new ProfileService();
+	}
+	
+	public HotelService shouldBeInTheHotelPage() {		
+		return new HotelService();
+	}
+	
+	public ViewCartService shouldBeInViewCartPage() {		
+		return new ViewCartService();
+	}
+	
+	public CartService shouldBeInCartPage() {		
+		return new CartService();
+	}
+	
+	public OrderHistoryService shouldBeInOrderHistoryPage() {		
+		return new OrderHistoryService();
 	}	
 
 }

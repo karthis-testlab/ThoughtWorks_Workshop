@@ -5,7 +5,7 @@ import com.tw.workshop.gui.base.SeleniumBase;
 public class LoginService extends SeleniumBase {
 	
 	public LoginService enterTheEmail(String email) {
-		waitForPageLoaded();
+		waitFor();
 		type(getWebElement("xpath=//input[@formcontrolname='userName']"), email);
 		return this;
 	}

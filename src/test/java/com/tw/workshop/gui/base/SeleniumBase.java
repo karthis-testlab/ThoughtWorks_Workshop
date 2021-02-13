@@ -272,7 +272,7 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 		String text = null;
 		try {
 			waitUntilvisibilityOfElement(ele);
-			text = ele.getText();
+			text = ele.getText().trim();
 			Logs.consoleLog("PASS", "Successfully fetch the following text "+text+" from the given element "+ele+" in the DOM");
 		} catch (Exception e) {			
 			Logs.consoleLog("FAIL", "Unable to fetch the following text "+text+" from the given element "+ele+" in the DOM. Because of "+e.toString());
@@ -305,6 +305,10 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 		List<String> handles = new ArrayList<String>(windows);
 		String exWindow = handles.get(index);
 		getDriver().switchTo().window(exWindow);
+	}
+	
+	public void acceptAlert() {		
+		getDriver().switchTo().alert().accept();
 	}
 
 }
