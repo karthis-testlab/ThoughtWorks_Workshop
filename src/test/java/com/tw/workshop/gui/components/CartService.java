@@ -3,10 +3,9 @@ package com.tw.workshop.gui.components;
 import org.testng.Assert;
 
 import com.tw.workshop.gui.base.SeleniumBase;
+import com.tw.workshop.utils.ReadProperties;
 
-public class CartService extends SeleniumBase {
-	
-	public String orderId;
+public class CartService extends SeleniumBase {	
 	
 	public CartService shouldBeFoodItemsAddIntoCart(String selectFood, int foodCount) {
 		waitFor();
@@ -25,15 +24,16 @@ public class CartService extends SeleniumBase {
 	
 	public CartService shouldBeAbleToPlaceTheOrder() {
 		waitFor();
-		String[] split = getText(getWebElement("xpath=//h2")).split("");
-		orderId = split[1];
+		String[] split = getText(getWebElement("xpath=//h2")).split(" ");
+		String orderId = split[1];
+		ReadProperties.writeConfig("cart.orderId", orderId);
 		return this;
 	}
 	
 	public OrderHistoryService clickOnTheOrderHistory() {
 		click(getWebElement("id=navbarDropdown"));
-		click(getWebElement("linktext=Order History"));
-		return new OrderHistoryService(orderId);
+		click(getWebElement("linktext=Order History"));		
+		return new OrderHistoryService();
 	}
 
 }
