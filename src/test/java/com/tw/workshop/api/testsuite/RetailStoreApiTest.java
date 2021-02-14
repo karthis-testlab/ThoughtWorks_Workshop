@@ -61,7 +61,7 @@ public class RetailStoreApiTest extends RestAssuredBase {
 		verifyContentWithKey(getAProduct, "stock[0]", 20);
 		
 		//Create Order
-		Response createOrder = post("/orders/", headers, "{ \"products\": [ { \"productId\": \""+productId+"\", \"quantity\": 1 } ]}");
+		Response createOrder = post("/orders/", headers, JsonHandler.readJsonObject("CreateOrder").toString().replaceAll(JsonHandler.readJsonObject("CreateOrder").toString().substring(40, 64), productId));
 		verifyResponseStatusCode(createOrder, 201);
 		verifyContentWithKey(createOrder, "message", "Order stored");
 		verifyContentWithKey(createOrder, "createdOrder.products[0].productId", productId);
@@ -78,7 +78,7 @@ public class RetailStoreApiTest extends RestAssuredBase {
 		verifyContentWithKey(getOrder, "products[0].productId", productId);		
 		
 		//Update an order
-		Response updateOrder = put("/orders", headers, orderId, "{ \"products\": [ { \"productId\": \""+productId+"\", \"quantity\": 6 } ]}");
+		Response updateOrder = put("/orders", headers, orderId, JsonHandler.readJsonObject("UpdateOrder").toString().replaceAll(JsonHandler.readJsonObject("UpdateOrder").toString().substring(40, 64), productId));
 		verifyResponseStatusCode(updateOrder, 200);
 		verifyContentWithKey(updateOrder, "order.orderId", orderId);
 		verifyContentWithKey(updateOrder, "order.products[0].productId", productId);
