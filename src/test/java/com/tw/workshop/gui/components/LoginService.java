@@ -1,11 +1,12 @@
 package com.tw.workshop.gui.components;
 
 import com.tw.workshop.gui.base.SeleniumBase;
+import com.tw.workshop.gui.base.SynchronizationWait;
 
 public class LoginService extends SeleniumBase {
 	
 	public LoginService enterTheEmail(String email) {
-		waitFor();
+		SynchronizationWait.waitUntilInVisibilityOfElement(getDriver(), getWebElement("xpath=//div[@class='overlay']"));
 		type(getWebElement("xpath=//input[@formcontrolname='userName']"), email);
 		return this;
 	}

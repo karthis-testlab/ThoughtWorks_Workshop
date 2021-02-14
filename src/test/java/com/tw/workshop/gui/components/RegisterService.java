@@ -3,11 +3,13 @@ package com.tw.workshop.gui.components;
 import org.testng.Assert;
 
 import com.tw.workshop.gui.base.SeleniumBase;
+import com.tw.workshop.gui.base.SynchronizationWait;
 import com.tw.workshop.utils.Logs;
 
 public class RegisterService extends SeleniumBase {
 	
 	public RegisterService enterTheFirstName(String fName) {
+		SynchronizationWait.waitUntilInVisibilityOfElement(getDriver(), getWebElement("xpath=//div[@class='overlay']"));
 		type(getWebElement("xpath=//input[@formcontrolname='firstName']"), fName);
 		return this;		
 	}

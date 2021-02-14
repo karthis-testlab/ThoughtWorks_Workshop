@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -47,15 +46,10 @@ public class TC002 {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
 	
-	public void waitForPageLoaded(RemoteWebDriver driver) {
-		if(!driver.executeScript("return document.readyState").toString().equals("complete")) {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {				
-				e.printStackTrace();
-			}
-		}
-	}
+	public void waitUntilInVisibilityOfElement(RemoteWebDriver driver, WebElement element) {
+		WebDriverWait wait = new WebDriverWait(driver, 15);
+		wait.until(ExpectedConditions.invisibilityOf(element));
+	}		
 
 	@BeforeSuite
 	public void beforeSuite() {
@@ -77,10 +71,10 @@ public class TC002 {
 	public void register_new_user() {
 		driver.get("https://young-reef-96450.herokuapp.com/");
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		waitForPageLoaded(driver);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 		WebElement register = driver.findElementByLinkText("Register");
 		driver.executeScript("arguments[0].click()", register);
-		waitForPageLoaded(driver);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 		driver.findElementByXPath("//input[@formcontrolname='firstName']").sendKeys(firstName);
 		driver.findElementByXPath("//input[@formcontrolname='lastName']").sendKeys("LastName1");
 		driver.findElementByXPath("//input[@formcontrolname='email']").sendKeys(emailId);
@@ -94,8 +88,7 @@ public class TC002 {
 		driver.executeScript("arguments[0].click()", terms);
 		Set<String> windows = driver.getWindowHandles();
 		ArrayList<String> list = new ArrayList<String>(windows);
-		driver.switchTo().window(list.get(1));
-		waitForPageLoaded(driver);
+		driver.switchTo().window(list.get(1));		
 		WebElement accept = driver.findElementByXPath("//button[text()=' I Accept & Close ']");
 		waitUntilvisibilityOfElement(driver, accept);
 		driver.executeScript("arguments[0].click()", accept);
@@ -109,27 +102,27 @@ public class TC002 {
 	}
 	
 	@Test(priority = 1)
-	public void login_with_user_credentials() throws InterruptedException {		
+	public void login_with_user_credentials() {		
 		WebElement login = driver.findElementByLinkText("login");
 		waitUntilvisibilityOfElement(driver, login);
 		driver.executeScript("arguments[0].click()", login);
-		waitForPageLoaded(driver);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 		driver.findElementByXPath("//input[@formcontrolname='userName']").sendKeys(emailId);
 		driver.findElementByXPath("//input[@formcontrolname='password']").sendKeys(password);
 		WebElement signIn = driver.findElementByXPath("//button[text()='Sign in']");
 		driver.executeScript("arguments[0].click()", signIn);
-		Thread.sleep(5000);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 		waitUntilvisibilityOfElement(driver, driver.findElementById("navbarDropdown"));
 		Assert.assertEquals(driver.findElementById("navbarDropdown").getText().contains(firstName), true, "[FALIED]: Profile name was wrong the given name is "+firstName);
 		System.out.println("[PASSED]: Proflie name is correct name of the profiler is "+firstName);
 	}
 	
 	@Test(priority = 2)
-	public void select_a_hotel_from_the_list() throws InterruptedException {
+	public void select_a_hotel_from_the_list() {
 		WebElement ele = driver.findElementByXPath("//h5[@class='card-title' and contains(text(), '"+hotelName+"')]");	
 		waitUntilvisibilityOfElement(driver, ele);
 		driver.executeScript("arguments[0].click()", ele);
-		Thread.sleep(5000);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 	}	
 	
 	@Test(priority = 3)
@@ -148,6 +141,7 @@ public class TC002 {
 		driver.executeScript("arguments[0].click()", dropDown);
 		WebElement cart = driver.findElementByLinkText("Cart");
 		driver.executeScript("arguments[0].click()", cart);
+		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
 		Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Product']//h6").getText().trim().equals(selectFood), true, "[FAILED]: Select food item was wrong");
 		System.out.println("[PASSED]: Correct food item got selected");		
 		Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Quantity']").getText().trim().equals(Integer.toString(foodCount)), true, "[FAILED]: Select food count was wrong");
@@ -155,14 +149,12 @@ public class TC002 {
 	}
 	
 	@Test(priority = 5)
-	public void place_order() throws InterruptedException {
-		Thread.sleep(5000);
+	public void place_order() {		
 		WebElement ele = driver.findElementByLinkText("Checkout");
-		driver.executeScript("arguments[0].click()", ele);
-		waitForPageLoaded(driver);
-		Thread.sleep(5000);
-		String[] split = driver.findElementByXPath("//h2").getText().split(" ");
-		orderId = split[1];		
+		driver.executeScript("arguments[0].click()", ele);		
+		waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2"));
+		String[] split = driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2").getText().split(" ");
+		orderId = split[1];			
 	}
 	
 	@Test(priority = 6)
@@ -170,8 +162,8 @@ public class TC002 {
 		WebElement dropDown = driver.findElementById("navbarDropdown");
 		driver.executeScript("arguments[0].click()", dropDown);
 		WebElement orderHistory = driver.findElementByLinkText("Order History");
-		driver.executeScript("arguments[0].click()", orderHistory);
-		waitForPageLoaded(driver);
+		driver.executeScript("arguments[0].click()", orderHistory);			
+		waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//div[@class='card']//button/span"));
 		Assert.assertEquals(driver.findElementByXPath("//div[@class='card']//button/span").getText().contains(orderId), true, "[FAILED]: Generated order id was incorrect");
 		System.out.println("[PASSED]: Generated order id was correct one.");
 	}

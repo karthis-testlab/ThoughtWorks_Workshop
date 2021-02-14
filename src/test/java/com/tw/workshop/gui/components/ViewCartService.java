@@ -5,7 +5,6 @@ import com.tw.workshop.gui.base.SeleniumBase;
 public class ViewCartService extends SeleniumBase {
 	
 	public ViewCartService clickOnTheNavigationBar() {
-		waitFor();
 		click(getWebElement("id=navbarDropdown"));
 		return this;
 	}

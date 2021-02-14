@@ -14,9 +14,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.tw.workshop.gui.constants.Browsers;
 import com.tw.workshop.gui.constants.LocatorTypes;
@@ -50,35 +48,7 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 	//3. Get ThreadLocal Value - To get value from the ThreadLocal you just need to use its get() method.
 	public RemoteWebDriver getDriver() {
 		return driver.get();
-	}
-
-	public void waitUntilvisibilityOfElement(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(getDriver(), 30);
-		wait.until(ExpectedConditions.visibilityOf(element));
-	}
-
-	public void waitUntilElementToBeClickable(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(getDriver(), 15);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-	}
-	
-	public void waitForPageLoaded() {
-		if(!getDriver().executeScript("return document.readyState").toString().equals("complete")) {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {				
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void waitFor() {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {				
-			e.printStackTrace();
-		}
-	}
+	}		
 
 	public RemoteWebDriver launchBrowser() {
 		RemoteWebDriver driver;
@@ -259,8 +229,8 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 
 	public void click(WebElement ele) {
 		try {
-			waitUntilvisibilityOfElement(ele);
-			waitUntilElementToBeClickable(ele);
+			SynchronizationWait.waitUntilvisibilityOfElement(getDriver(), ele);
+			SynchronizationWait.waitUntilElementToBeClickable(getDriver(), ele);
 			getDriver().executeScript("arguments[0].click()", ele);
 			Logs.consoleLog("PASS", "Successfully click on the given element "+ele+" in the DOM");
 		} catch (Exception e) {			
@@ -271,7 +241,7 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 	public String getText(WebElement ele) {
 		String text = null;
 		try {
-			waitUntilvisibilityOfElement(ele);
+			SynchronizationWait.waitUntilvisibilityOfElement(getDriver(), ele);
 			text = ele.getText().trim();
 			Logs.consoleLog("PASS", "Successfully fetch the following text "+text+" from the given element "+ele+" in the DOM");
 		} catch (Exception e) {			
@@ -282,7 +252,7 @@ public class SeleniumBase implements ISeleniumBaseDesign {
 
 	public void selectValueInDropdown(WebElement ele, String text) {
 		try {
-			waitUntilvisibilityOfElement(ele);
+			SynchronizationWait.waitUntilvisibilityOfElement(getDriver(), ele);
 			Select select = new Select(ele);
 			select.selectByVisibleText(text);
 		} catch (Exception e) {
