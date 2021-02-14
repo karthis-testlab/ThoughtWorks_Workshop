@@ -12,7 +12,7 @@ public class JavaHelper {
 	}
 
 	public static String generateRandomEmailId() {
-		String emailName = "username"+RandomStringUtils.randomNumeric(2);
+		String emailName = "username"+RandomStringUtils.randomAlphanumeric(3);
 		String domainName = "email";
 		return emailName+"@"+domainName+".com";
 	}

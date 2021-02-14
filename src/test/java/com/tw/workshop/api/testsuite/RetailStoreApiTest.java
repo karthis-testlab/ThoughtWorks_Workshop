@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 import com.tw.workshop.api.base.RestAssuredBase;
 import com.tw.workshop.utils.JavaHelper;
+import com.tw.workshop.utils.JsonHandler;
 import com.tw.workshop.utils.ReadProperties;
 
 import io.restassured.response.Response;
@@ -24,21 +25,22 @@ public class RetailStoreApiTest extends RestAssuredBase {
 		headers.put("Content-Type", "application/json");
 		headers.put("accept", "application/json");
 		
-		//User signup
-		Response register = post("/user/signup", headers, "{ \"email\": \""+emailId+"\", \"password\": \"password\"}");
+		//User signup			
+		JsonHandler.wirteJsonObject("SignUp", "email", emailId);
+		Response register = post("/user/signup", headers, JsonHandler.readJsonObject("SignUp").toString());
 		verifyResponseStatusCode(register, 201);
 		verifyContentWithKey(register, "message", "user created");
 		verifyResponseTime(register, 4000);
 		
 		//User login
-		Response login = post("/user/login", headers, "{ \"email\": \""+emailId+"\", \"password\": \"password\"}");
+		Response login = post("/user/login", headers, JsonHandler.readJsonObject("SignUp").toString());
 		verifyResponseStatusCode(login, 200);
 		verifyContentWithKey(login, "message", "Auth Successful");
 		String token = login.getBody().jsonPath().get("token").toString();
 		
 		//Create product
 		headers.put("Authorization", "Bearer "+token);
-		Response createProduct = post("/products/", headers, "{ \"name\": \"Tv_Karthikeyan\", \"price\": 35000, \"soldBy\": \"Samsung\", \"stock\": 20}");
+		Response createProduct = post("/products/", headers, JsonHandler.readJsonObject("Products").toString());
 		verifyResponseStatusCode(createProduct, 201);
 		verifyContentWithKey(createProduct, "message", "Created product successfully");
 		String productId = createProduct.getBody().jsonPath().get("createdProduct.productId").toString();

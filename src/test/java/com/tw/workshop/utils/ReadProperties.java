@@ -23,16 +23,16 @@ public class ReadProperties {
 		return data;		 
 	}
 	
-	public static String writeConfig(String key, String data) {		
+	public static String writeProperties(String key, String data) {		
 		Properties config = new Properties();		
 		try {
 			config.put(key, data);
-			FileOutputStream out = new FileOutputStream(new File("src/test/resources/Config.properties"));
+			FileOutputStream out = new FileOutputStream(new File("src/test/resources/Fixtures/OrderId.properties"));
 			config.store(out, "Properties file created......");
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException("'Config.properties' file not found in the project src/test/resources/ path.");
+			throw new RuntimeException("'OrderId.properties' file not found in the project src/test/resources/Fixtures/ path.");
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to write the config.properties file.");
+			throw new RuntimeException("Unable to write the OrderId.properties file.");
 		}
 		return data;		 
 	}

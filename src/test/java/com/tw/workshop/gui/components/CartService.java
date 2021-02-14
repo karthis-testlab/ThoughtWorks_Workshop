@@ -26,7 +26,7 @@ public class CartService extends SeleniumBase {
 		SynchronizationWait.waitUntilElementToBeClickable(getDriver(), getWebElement("xpath=//img[@alt='order placed']/following-sibling::h2"));
 		String[] split = getText(getWebElement("xpath=//img[@alt='order placed']/following-sibling::h2")).split(" ");
 		String orderId = split[1];
-		ReadProperties.writeConfig("cart.orderId", orderId);
+		ReadProperties.writeProperties("cart.orderId", orderId);
 		return this;
 	}
 	
