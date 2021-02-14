@@ -23,5 +23,10 @@ public class BrowseThat extends SeleniumBase {
 		launchBrowser();
 		return this;
 	}
+	
+	public BrowseThat andTakeASnap(String fileName) {
+		takeSnap(fileName);
+		return this;
+	}
 
 }

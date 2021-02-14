@@ -15,7 +15,7 @@ public class OrderHistoryService extends SeleniumBase {
 	
 	public OrderHistoryService shouldBeAbleToSeeOrderIdInHistory() {		
 		SynchronizationWait.waitUntilvisibilityOfElement(getDriver(), getWebElement("xpath=//div[@class='card']//button/span"));
-		Assert.assertEquals(getText(getWebElement("xpath=//div[@class='card']//button/span")).contains(ReadProperties.readConfig("cart.orderId")), true, "[FAILED]: Generated order id was incorrect");
+		Assert.assertEquals(getText(getWebElement("xpath=//div[@class='card']//button/span")).contains(ReadProperties.readProperties("cart.orderId")), true, "[FAILED]: Generated order id was incorrect");
 		System.out.println("[PASSED]: Generated order id was correct one.");
 		return this;
 	}

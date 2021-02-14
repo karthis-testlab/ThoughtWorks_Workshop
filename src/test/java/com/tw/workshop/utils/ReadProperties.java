@@ -23,7 +23,7 @@ public class ReadProperties {
 		return data;		 
 	}
 	
-	public static String writeProperties(String key, String data) {		
+	public static void writeProperties(String key, String data) {		
 		Properties config = new Properties();		
 		try {
 			config.put(key, data);
@@ -33,6 +33,19 @@ public class ReadProperties {
 			throw new RuntimeException("'OrderId.properties' file not found in the project src/test/resources/Fixtures/ path.");
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to write the OrderId.properties file.");
+		}		 
+	}
+	
+	public static String readProperties(String key) {		
+		Properties config = new Properties();
+		String data;
+		try {
+			config.load(new FileInputStream(new File("src/test/resources/Fixtures/OrderId.properties")));
+			data = config.getProperty(key);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("'OrderId.properties' file not found in the project src/test/resources/Fixtures/ path.");
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to read the OrderId.properties file.");
 		}
 		return data;		 
 	}

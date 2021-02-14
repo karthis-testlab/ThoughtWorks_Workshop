@@ -2,7 +2,9 @@ package com.tw.workshop.gui.testsuite;
 
 import java.io.File;
 
+import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -74,8 +76,15 @@ public class TC001 {
 		
 	}
 	
+	@AfterMethod
+	public void afterMethod(ITestResult result) {
+		if(ITestResult.FAILURE == result.getStatus()) {
+			karthi.browseTheApplication().takeSnap("Faliure"+JavaHelper.generateRandomNumbers(5));
+		}
+	}
+	
 	@AfterClass
-	public void afterClass() {
+	public void afterClass() {		
 		karthi.browseTheApplication().andCloseThat();
 	}
 
