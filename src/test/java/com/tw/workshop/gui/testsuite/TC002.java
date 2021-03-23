@@ -1,21 +1,29 @@
 package com.tw.workshop.gui.testsuite;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+
+import com.tw.workshop.utils.Reporter;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -58,6 +66,8 @@ public class TC002 {
 		firstName = "FirstName1";
 		hotelName = "Punjab Grill";
 		foodCount = 2;
+		
+		Reporter.createInstance("result");		
 	}
 
 	@BeforeClass
@@ -65,6 +75,13 @@ public class TC002 {
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
+		
+		Reporter.createTestCases(getClass().getName());
+	}
+	
+	@BeforeMethod
+	public void beforeMethod(Method method) {
+		Reporter.createTest(method.getName());
 	}
 
 	@Test(priority = 0)
@@ -98,79 +115,119 @@ public class TC002 {
 		driver.executeScript("arguments[0].click()", registerButton);
 		Assert.assertEquals(driver.findElementByXPath("//div[@class='registerForm']/h2").getText().trim(),
 				"You are registered please Login!!", "[FAILED]: Unable to registered");
-		System.out.println("[PASSED]: Successfully registered into the site");
+		Reporter.reportLog("PASS", "[PASSED]: Successfully registered into the site");		
 	}
 	
 	@Test(priority = 1)
 	public void login_with_user_credentials() {		
-		WebElement login = driver.findElementByLinkText("login");
-		waitUntilvisibilityOfElement(driver, login);
-		driver.executeScript("arguments[0].click()", login);
-		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
-		driver.findElementByXPath("//input[@formcontrolname='userName']").sendKeys(emailId);
-		driver.findElementByXPath("//input[@formcontrolname='password']").sendKeys(password);
-		WebElement signIn = driver.findElementByXPath("//button[text()='Sign in']");
-		driver.executeScript("arguments[0].click()", signIn);
-		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
-		waitUntilvisibilityOfElement(driver, driver.findElementById("navbarDropdown"));
-		Assert.assertEquals(driver.findElementById("navbarDropdown").getText().contains(firstName), true, "[FALIED]: Profile name was wrong the given name is "+firstName);
-		System.out.println("[PASSED]: Proflie name is correct name of the profiler is "+firstName);
+		try {
+			WebElement login = driver.findElementByLinkText("login");
+			waitUntilvisibilityOfElement(driver, login);
+			driver.executeScript("arguments[0].click()", login);
+			waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
+			driver.findElementByXPath("//input[@formcontrolname='userName']").sendKeys(emailId);
+			driver.findElementByXPath("//input[@formcontrolname='password']").sendKeys(password);
+			WebElement signIn = driver.findElementByXPath("//button[text()='Sign in']");
+			driver.executeScript("arguments[0].click()", signIn);
+			waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
+			waitUntilvisibilityOfElement(driver, driver.findElementById("navbarDropdown"));
+			Assert.assertEquals(driver.findElementById("navbarDropdown").getText().contains(firstName), true, "[FALIED]: Profile name was wrong the given name is "+firstName);
+			Reporter.reportLog("PASS", "[PASSED]: Proflie name is correct name of the profiler is "+firstName);
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
+		}
 	}
 	
 	@Test(priority = 2)
 	public void select_a_hotel_from_the_list() {
-		WebElement ele = driver.findElementByXPath("//h5[@class='card-title' and contains(text(), '"+hotelName+"')]");	
-		waitUntilvisibilityOfElement(driver, ele);
-		driver.executeScript("arguments[0].click()", ele);
-		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
+		try {
+			WebElement ele = driver.findElementByXPath("//h5[@class='card-title' and contains(text(), '"+hotelName+"')]");	
+			waitUntilvisibilityOfElement(driver, ele);
+			driver.executeScript("arguments[0].click()", ele);
+			waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
+		}
 	}	
 	
 	@Test(priority = 3)
 	public void select_food() {
-		selectFood = driver.findElementByXPath("(//div[@class='row']//table)[1]/tr[1]/td/span").getText();
-		for (int i = 0; i < foodCount; i++) {
-			WebElement ele = driver.findElementByXPath("(//div[@class='row']//table)[1]/tr[2]/td/button[text()=' + ']");
-			driver.executeScript("arguments[0].click()", ele);
-			driver.switchTo().alert().accept();			
+		try {
+			selectFood = driver.findElementByXPath("(//div[@class='row']//table)[1]/tr[1]/td/span").getText();
+			for (int i = 0; i < foodCount; i++) {
+				WebElement ele = driver.findElementByXPath("(//div[@class='row']//table)[1]/tr[2]/td/button[text()=' + ']");
+				driver.executeScript("arguments[0].click()", ele);
+				driver.switchTo().alert().accept();			
+			}
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
 		}
 	}
 	
 	@Test(priority = 4)
 	public void view_cart() {
-		WebElement dropDown = driver.findElementById("navbarDropdown");
-		driver.executeScript("arguments[0].click()", dropDown);
-		WebElement cart = driver.findElementByLinkText("Cart");
-		driver.executeScript("arguments[0].click()", cart);
-		waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
-		Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Product']//h6").getText().trim().equals(selectFood), true, "[FAILED]: Select food item was wrong");
-		System.out.println("[PASSED]: Correct food item got selected");		
-		Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Quantity']").getText().trim().equals(Integer.toString(foodCount)), true, "[FAILED]: Select food count was wrong");
-		System.out.println("[PASSED]: Number of food count was correct");
+		try {
+			WebElement dropDown = driver.findElementById("navbarDropdown");
+			driver.executeScript("arguments[0].click()", dropDown);
+			WebElement cart = driver.findElementByLinkText("Cart");
+			driver.executeScript("arguments[0].click()", cart);
+			waitUntilInVisibilityOfElement(driver, driver.findElementByXPath("//div[@class='overlay']"));
+			Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Product']//h6").getText().trim().equals(selectFood), true, "[FAILED]: Select food item was wrong");
+			Reporter.reportLog("PASS", "[PASSED]: Correct food item got selected");		
+			Assert.assertEquals(driver.findElementByXPath("//td[@data-th='Quantity']").getText().trim().equals(Integer.toString(foodCount)), true, "[FAILED]: Select food count was wrong");
+			Reporter.reportLog("PASS", "[PASSED]: Number of food count was correct");
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
+		}
 	}
 	
 	@Test(priority = 5)
 	public void place_order() {		
-		WebElement ele = driver.findElementByLinkText("Checkout");
-		driver.executeScript("arguments[0].click()", ele);		
-		waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2"));
-		String[] split = driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2").getText().split(" ");
-		orderId = split[1];			
+		try {
+			WebElement ele = driver.findElementByLinkText("Checkout");
+			driver.executeScript("arguments[0].click()", ele);		
+			waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2"));
+			String[] split = driver.findElementByXPath("//img[@alt='order placed']/following-sibling::h2").getText().split(" ");
+			orderId = split[1];
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
+		}			
 	}
 	
 	@Test(priority = 6)
 	public void view_order_summary() {
-		WebElement dropDown = driver.findElementById("navbarDropdown");
-		driver.executeScript("arguments[0].click()", dropDown);
-		WebElement orderHistory = driver.findElementByLinkText("Order History");
-		driver.executeScript("arguments[0].click()", orderHistory);			
-		waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//div[@class='card']//button/span"));
-		Assert.assertEquals(driver.findElementByXPath("//div[@class='card']//button/span").getText().contains(orderId), true, "[FAILED]: Generated order id was incorrect");
-		System.out.println("[PASSED]: Generated order id was correct one.");
+		try {
+			WebElement dropDown = driver.findElementById("navbarDropdown");
+			driver.executeScript("arguments[0].click()", dropDown);
+			WebElement orderHistory = driver.findElementByLinkText("Order History");
+			driver.executeScript("arguments[0].click()", orderHistory);			
+			waitUntilvisibilityOfElement(driver, driver.findElementByXPath("//div[@class='card']//button/span"));
+			Assert.assertEquals(driver.findElementByXPath("//div[@class='card']//button/span").getText().contains(orderId), true, "[FAILED]: Generated order id was incorrect");
+			Reporter.reportLog("PASS", "[PASSED]: Generated order id was correct one.");
+		} catch (NoSuchElementException e) {			
+			throw new RuntimeException("[FAILED]: Unable to locate element "+e.getMessage());
+		}
+	}
+	
+	@AfterMethod
+	public void afterMethod(ITestResult result) {
+		if(result.getStatus() == ITestResult.FAILURE) {
+			Reporter.reportLog("FAIL", result.getThrowable().getMessage());
+		} else if(result.getStatus() == ITestResult.SKIP) {
+			Reporter.reportLog("SKIP", result.getThrowable().getMessage());
+		} else if(result.getStatus() == ITestResult.SUCCESS) {
+			Reporter.reportLog("PASS", "Test Passed");
+		}
 	}
 	
 	@AfterClass
 	public void afterClass() {
 		driver.close();
+	}
+	
+	@AfterSuite
+	public void afterSuite() {
+		Reporter.tearDownInstance();
 	}
 
 }

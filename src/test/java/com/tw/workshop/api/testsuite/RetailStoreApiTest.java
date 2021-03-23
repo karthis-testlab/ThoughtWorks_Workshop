@@ -1,11 +1,16 @@
 package com.tw.workshop.api.testsuite;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.annotations.Test;
 
 import com.tw.workshop.api.base.RestAssuredBase;
+import com.tw.workshop.api.serialization.pojo.Product;
+import com.tw.workshop.api.serialization.pojo.Products;
+import com.tw.workshop.api.serialization.pojo.UserAccount;
 import com.tw.workshop.utils.JavaHelper;
 import com.tw.workshop.utils.JsonHandler;
 import com.tw.workshop.utils.ReadProperties;
@@ -15,7 +20,7 @@ import io.restassured.response.Response;
 public class RetailStoreApiTest extends RestAssuredBase {
 	
 	@Test
-	public void test_RetailStoreApiTest() {
+	public void test_RetailStoreApiTest() {		
 		
 		String emailId = JavaHelper.generateRandomEmailId();
 		
@@ -26,14 +31,19 @@ public class RetailStoreApiTest extends RestAssuredBase {
 		headers.put("accept", "application/json");
 		
 		//User signup			
-		JsonHandler.wirteJsonObject("SignUp", "email", emailId);
-		Response register = post("/user/signup", headers, JsonHandler.readJsonObject("SignUp").toString());
+		//JsonHandler.wirteJsonObject("SignUp", "email", emailId);
+		//Response register = post("/user/signup", headers, JsonHandler.readJsonObject("SignUp").toString());
+		UserAccount user = new UserAccount();
+		user.setEmail(emailId);
+		user.setPassword("password");
+		Response register = post("/user/signup", headers, user);
 		verifyResponseStatusCode(register, 201);
 		verifyContentWithKey(register, "message", "user created");
-		verifyResponseTime(register, 4000);
+		//verifyResponseTime(register, 4000);
 		
-		//User login
-		Response login = post("/user/login", headers, JsonHandler.readJsonObject("SignUp").toString());
+		//User login		
+		//Response login = post("/user/login", headers, JsonHandler.readJsonObject("SignUp").toString());	
+		Response login = post("/user/login", headers, user);	
 		verifyResponseStatusCode(login, 200);
 		verifyContentWithKey(login, "message", "Auth Successful");
 		String token = login.getBody().jsonPath().get("token").toString();
@@ -78,7 +88,15 @@ public class RetailStoreApiTest extends RestAssuredBase {
 		verifyContentWithKey(getOrder, "products[0].productId", productId);		
 		
 		//Update an order
-		Response updateOrder = put("/orders", headers, orderId, JsonHandler.readJsonObject("UpdateOrder").toString().replaceAll(JsonHandler.readJsonObject("UpdateOrder").toString().substring(40, 64), productId));
+		//Response updateOrder = put("/orders", headers, orderId, JsonHandler.readJsonObject("UpdateOrder").toString().replaceAll(JsonHandler.readJsonObject("UpdateOrder").toString().substring(40, 64), productId));
+		Product product = new Product();
+		product.setProductId(productId);
+		product.setQuantity(6);
+		Products products = new Products();
+		List<Product> productList = new ArrayList<Product>();
+		productList.add(product);
+		products.setProducts(productList);
+		Response updateOrder = put("/orders", headers, orderId, products);
 		verifyResponseStatusCode(updateOrder, 200);
 		verifyContentWithKey(updateOrder, "order.orderId", orderId);
 		verifyContentWithKey(updateOrder, "order.products[0].productId", productId);

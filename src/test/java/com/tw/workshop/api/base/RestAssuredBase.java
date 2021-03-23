@@ -152,12 +152,12 @@ public class RestAssuredBase {
 
 	public boolean verifyResponseTime(Response response, long time) {
 		boolean bReturn;
-		if(response.time() <= time) {
+		if(response.getTime() <= time) {
 			bReturn = true;
-			System.out.println("[PASS]: The time taken "+response.time() +" with in the expected SLA time "+time);			
+			System.out.println("[PASS]: The time taken "+response.getTime()+" with in the expected SLA time "+time);			
 		}else {
 			bReturn = false;
-			throw new RuntimeException("[FAIL]: The time taken "+response.time() +" is greater than expected SLA time "+time);		
+			throw new RuntimeException("[FAIL]: The time taken "+response.getTime()+" is greater than expected SLA time "+time);		
 		}
 		return bReturn;
 	}
